@@ -5,12 +5,12 @@ import pandas as pd
 from scrapper import scrape_tokopedia_graphql
 from io import BytesIO
 
-# 🧭 Setup halaman
-st.set_page_config(page_title="Tokopedia Scraper Pro", layout="wide")
+# 🌐 Setup halaman
+st.set_page_config(page_title="HargaBuddy - Tokopedia Scraper", layout="wide")
 st.title("🛍️ HargaBuddy - Scraper Produk Tokopedia")
-st.markdown("Temukan produk, filter harga, dan ekspor data ke Excel 💡\n")
+st.markdown("Temukan produk, filter harga, dan ekspor data ke Excel 💡")
 
-# 📌 Input User
+# 🧾 Input Pencarian
 keyword = st.text_input("Masukkan keyword produk:", value="sepatu adidas")
 start_page = st.number_input("Dari halaman", min_value=1, value=1, step=1)
 end_page = st.number_input("Sampai halaman", min_value=start_page, value=start_page, step=1)
@@ -21,33 +21,44 @@ with col1:
 with col2:
     max_price = st.number_input("Harga maksimum (Rp)", min_value=0, value=1000000, step=5000)
 
-# 🔘 Tombol Action
+# 🚀 Scraping Button
 if st.button("Cari Produk"):
     with st.spinner("🔄 Mengambil data dari Tokopedia..."):
         df = scrape_tokopedia_graphql(keyword, start_page, end_page, min_price, max_price)
+
         if not df.empty:
             st.success(f"✅ {len(df)} produk ditemukan.")
-            df['Link'] = df['Link'].apply(lambda x: f"[🔗 Buka Link]({x})")
-            st.markdown("### 📊 Hasil Pencarian Produk") 
-            st.write(df.to_markdown(index=False), unsafe_allow_html=True)
 
-            # 📥 Export ke Excel
-            buffer = BytesIO()
-            df.to_excel(buffer, index=False, engine='openpyxl')
-            buffer.seek(0)
-            st.download_button(
-                label="📥 Download Excel",
-                data=buffer,
-                file_name="tokopedia_products.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+            with st.container():
+                st.subheader("📦 Hasil Pencarian Produk")
+                
+                # Link tetap dalam bentuk teks
+                df_display = df.copy()
+                df_display['Link'] = df_display['Link'].apply(lambda x: f"🔗 {x}")
+                st.dataframe(df_display)
 
-            # 📊 Visualisasi Harga
-            st.subheader("💸 Distribusi Harga Produk")
-            st.bar_chart(df['Harga Numeric'])
+                # 📥 Tombol Download Excel
+                buffer = BytesIO()
+                df.to_excel(buffer, index=False, engine='openpyxl')
+                buffer.seek(0)
+                st.download_button(
+                    label="📥 Download Excel",
+                    data=buffer,
+                    file_name="tokopedia_products.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
 
-            # 📍 Visualisasi Kota
-            st.subheader("📍 Sebaran Produk Berdasarkan Kota")
-            st.bar_chart(df['Kota'].value_counts())
+                st.markdown("---")
+
+                # 📊 Distribusi Harga
+                st.subheader("💸 Distribusi Harga Produk")
+                st.bar_chart(df['Harga Numeric'])
+
+                # 📍 Distribusi Kota
+                st.subheader("📍 Sebaran Produk Berdasarkan Kota")
+                st.bar_chart(df['Kota'].value_counts())
+
+            st.markdown("---")
+            st.markdown("Built with ❤️ by [Milzon](https://github.com/milzon1010)")
         else:
             st.warning("Tidak ada produk ditemukan dengan filter tersebut.")

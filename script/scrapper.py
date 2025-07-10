@@ -4,9 +4,6 @@ import requests
 import pandas as pd
 
 def scrape_tokopedia_graphql(keyword: str, start_page: int = 1, end_page: int = 1, min_price: int = 0, max_price: int = 999999999) -> pd.DataFrame:
-    """
-    Scrape produk Tokopedia dengan filter harga dan multi-page.
-    """
     url = "https://gql.tokopedia.com/graphql/SearchProductV5Query"
     headers = {
         "Content-Type": "application/json",
@@ -26,9 +23,7 @@ def scrape_tokopedia_graphql(keyword: str, start_page: int = 1, end_page: int = 
 
         payload = [{
             "operationName": "SearchProductV5Query",
-            "variables": {
-                "params": query_string
-            },
+            "variables": {"params": query_string},
             "query": "query SearchProductV5Query($params: String!) { searchProductV5(params: $params) { data { products { name url price { text number } shop { name city } rating }}}}"
         }]
 
