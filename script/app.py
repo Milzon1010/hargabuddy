@@ -40,5 +40,11 @@ if st.button("Cari Produk"):
             )
 
             # 📊 Visualisasi Harga
-            st.subheader("💸 Distribusi Harga")
-            st.bar_chart(df['Harg]()_
+            st.subheader("💸 Distribusi Harga Produk")
+            st.bar_chart(df['Harga Numeric'])
+
+            # 📍 Visualisasi Kota
+            st.subheader("📍 Sebaran Produk Berdasarkan Kota")
+            st.bar_chart(df['Kota'].value_counts())
+        else:
+            st.warning("Tidak ada produk ditemukan dengan filter tersebut.")
