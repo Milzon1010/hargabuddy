@@ -7,7 +7,8 @@ from io import BytesIO
 
 # 🧭 Setup halaman
 st.set_page_config(page_title="Tokopedia Scraper Pro", layout="wide")
-st.title("🔍 Scrape Produk Tokopedia via GraphQL")
+st.title("🛍️ HargaBuddy - Scraper Produk Tokopedia")
+st.markdown("Temukan produk, filter harga, dan ekspor data ke Excel 💡\n")
 
 # 📌 Input User
 keyword = st.text_input("Masukkan keyword produk:", value="sepatu adidas")
@@ -26,7 +27,9 @@ if st.button("Cari Produk"):
         df = scrape_tokopedia_graphql(keyword, start_page, end_page, min_price, max_price)
         if not df.empty:
             st.success(f"✅ {len(df)} produk ditemukan.")
-            st.dataframe(df)
+            df['Link'] = df['Link'].apply(lambda x: f"[🔗 Buka Link]({x})")
+            st.markdown("### 📊 Hasil Pencarian Produk") 
+            st.write(df.to_markdown(index=False), unsafe_allow_html=True)
 
             # 📥 Export ke Excel
             buffer = BytesIO()
